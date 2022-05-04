@@ -1,15 +1,22 @@
-const { insertEntry } = require("../../repositories/insertEntry");
+const { insertEntry } = require("../../repositories/entries/insertEntry");
 
-async function postEntry(req, res) {
-  const { title, description } = req.body;
+async function postEntry(req, res, next) {
+  try {
+    const { title, description } = req.body;
 
-  const insertId = await insertEntry(title, description);
+    const insertId = await insertEntry(title, description, req.auth.id);
 
-  res.send({
-    id: insertId,
-    title,
-    description,
-  });
+    res.send({
+      status: "ok",
+      data: {
+        id: insertId,
+        title,
+        description,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
 }
 
 module.exports = { postEntry };
